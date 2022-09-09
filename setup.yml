@@ -33,10 +33,6 @@
       notify:
         - Restart_sshd
 
-    - name: Print facts
-      debug:
-        var: ansible_facts
-
   handlers:
     - name: Restart_sshd
       service:
