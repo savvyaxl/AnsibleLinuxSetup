@@ -11,6 +11,7 @@
         group: root
       notify:
         - Restart_sshd
+      when: ansible_facts['distribution_release'] == "Plow" or ansible_facts['distribution'] == "Fedora"
 
     - name: Modify authorized_keys 1
       ansible.builtin.lineinfile:
