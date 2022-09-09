@@ -2,7 +2,28 @@
 - hosts: update 
   gather_facts: yes
   tasks:
-    - name: Setup
+    - name: Setup sudoers
+      copy:
+        src: files/sudoers
+        dest: /etc/sudoers
+        mode: 0440
+        owner: root
+        group: root
+
+    - name: Setup sshd permission for ansible in /etc/ssh/sshd_config
+      ansible.builtin.blockinfile:
+        path: /etc/ssh/sshd_config
+        block: |
+          Match User ansible
+              PasswordAuthentication no
+              X11Forwarding no
+              AllowTcpForwarding no
+              PermitTTY no
+      notify:
+        - Restart_sshd
+      when: ansible_facts['distribution_release'] != "Plow" and ansible_facts['distribution'] != "Fedora"
+
+    - name: Setup /etc/ssh/sshd_config.d/ansible.conf
       copy:
         src: files/sshd_config_ansible
         dest: /etc/ssh/sshd_config.d/ansible.conf
