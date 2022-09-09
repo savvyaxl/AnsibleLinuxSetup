@@ -1,0 +1,6 @@
+Match User ansible
+       PasswordAuthentication no
+       X11Forwarding no
+       AllowTcpForwarding no
+       PermitTTY no
+
