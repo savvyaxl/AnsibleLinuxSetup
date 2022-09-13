@@ -26,7 +26,7 @@
     - name: Setup /etc/ssh/sshd_config.d/ansible.conf
       copy:
         src: files/sshd_config_ansible
-        dest: /etc/ssh/sshd_config.d/ansible.conf
+        dest: /etc/ssh/sshd_config.d/10-ansible.conf
         mode: 0400
         owner: root
         group: root
