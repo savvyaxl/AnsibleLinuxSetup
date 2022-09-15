@@ -30,7 +30,7 @@
       reboot:
       async: 30
       poll: 0
-      when: result.rc == 1
+      when: result.rc == 1 and hostname != "ansible"
 
     # This pause is mandatory, otherwise the existing control connection
     # gets reused!
