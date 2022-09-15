@@ -19,7 +19,6 @@
       command: needs-restarting -r
       register: result
       ignore_errors: yes
-      changed_when: false
 
     - debug:
         var: yum_updates
