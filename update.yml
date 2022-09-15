@@ -1,5 +1,6 @@
 ---
 - hosts: update
+  gather_facts: no
   tasks:
     - name: Update all installed packages using YUM module
       yum:
@@ -45,3 +46,6 @@
     #  retries: 3
     #  delay: 10
     #  when: result.rc == 1
+
+    - name: Verify reboot
+      command: whoami
