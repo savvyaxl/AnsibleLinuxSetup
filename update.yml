@@ -27,3 +27,7 @@
     - debug:
         var: result.stdout_lines
 
+    - name: Reboot Server if Necessary
+      reboot:
+      when: result.rc == 1
+
