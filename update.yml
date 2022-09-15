@@ -28,7 +28,6 @@
 
     - name: Reboot Server if Necessary
       reboot:
-      when: result.rc == 1
       async: 30
       poll: 0
       when: result.rc == 1
