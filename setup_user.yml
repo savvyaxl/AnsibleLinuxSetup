@@ -30,11 +30,10 @@
         group: "{{ user }}"
         mode: 0700
 
-    - name: touch me
-      shell: touch /home/{{ user }}/.ssh/authorized_keys
+    #- name: touch authorized_keys
+    #  shell: touch /home/{{ user }}/.ssh/authorized_keys
 
-
-    - name: Create Auth keys
+    - name: set perms authorized_keys
       ansible.builtin.file:
         path: /home/{{ user }}/.ssh/authorized_keys
         state: file
