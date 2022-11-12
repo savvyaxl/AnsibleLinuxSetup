@@ -22,6 +22,12 @@
       user: 
         name: "{{ user }}"
 
+    - name: Edit sudoers
+      copy:
+        dest: "/etc/sudoers.d/ansible"
+        content: |
+          ansible  ALL=(ALL)       NOPASSWD: ALL
+
     - name: Create .ssh dir
       ansible.builtin.file:
         path: /home/{{ user }}/.ssh
