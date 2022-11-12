@@ -30,8 +30,8 @@
         group: "{{ user }}"
         mode: 0700
 
-    #- name: touch authorized_keys
-    #  shell: touch /home/{{ user }}/.ssh/authorized_keys
+    - name: touch authorized_keys
+      shell: touch /home/{{ user }}/.ssh/authorized_keys
 
     - name: set perms authorized_keys
       ansible.builtin.file:
