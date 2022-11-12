@@ -22,6 +22,11 @@
       user: 
         name: "{{ user }}"
 
+    - name: Create .ssh dir
+      ansible.builtin.file:
+        path: /home/{{ user }}/.ssh
+        state: directory
+
     - name: Create Auth keys
       ansible.builtin.file:
         path: /home/{{ user }}/.ssh/authorized_keys
