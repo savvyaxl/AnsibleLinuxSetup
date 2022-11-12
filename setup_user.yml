@@ -2,8 +2,6 @@
 - hosts: setup 
   gather_facts: no
   remote_user: alex
-  ask_pass: yes
-  become_ask_pass: true
   vars:
     user: ansible
 
