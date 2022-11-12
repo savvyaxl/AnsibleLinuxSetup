@@ -1,6 +1,2 @@
-[update]
-web01
-lpar2rrd
-storage01
-ansible
-msi
+[setup]
+web02
