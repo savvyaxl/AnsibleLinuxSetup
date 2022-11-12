@@ -1,5 +1,5 @@
 ---
-- hosts: update
+- hosts: setup
   gather_facts: no
   tasks:
     - name: Update all installed packages using YUM module
@@ -8,13 +8,12 @@
         state: latest
         update_cache: yes
         update_only: yes
-        #autoremove: yes
       register: yum_updates
 
-    #- name: Install Yum Utilities
-    #  yum:
-    #    name: yum-utils
-    #    state: latest
+    - name: Install Yum Utilities
+      yum:
+        name: yum-utils
+        state: latest
 
     - name: check to see if we need a reboot
       command: needs-restarting -r
@@ -29,26 +28,16 @@
 
     - name: Reboot Server if Necessary
       reboot:
-      async: 30
+      async: 1
       poll: 0
       when: result.rc == 1 and inventory_hostname != "ansible"
       ignore_errors: yes
 
-    # This pause is mandatory, otherwise the existing control connection
-    # gets reused!
-    # (https://gist.github.com/infernix/a968f23c4f4e1d6723e4)
-    #- name: Pausing to allow server to shutdown and terminate our SSH connection
-    #  pause: seconds=30
-    #  when: result.rc == 1
+    - name: Pausing to allow server to shutdown and terminate our SSH connection
+      pause: seconds=100
+      when: result.rc == 1
 #
-    #- name: Wait for reboot to complete and SSH to become available
-    #  local_action: wait_for host "{{ inventory_hostname }}"
-    #    state=started delay=30 timeout=60
-    #  retries: 3
-    #  delay: 10
-    #  when: result.rc == 1
-
     - name: Verify reboot
-      command: whoami
+      command: uptime
       when: result.rc == 1
 
