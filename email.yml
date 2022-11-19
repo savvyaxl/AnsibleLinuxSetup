@@ -20,4 +20,4 @@
         subject: Ansible-report
         body: System {{ inventory_hostname }} has been successfully provisioned. {{uptime}}
         secure: always
-
+      delegate_to: localhost
