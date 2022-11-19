@@ -46,7 +46,10 @@
 
     - name: Get timestamp from the system
       shell: "date"
+      delegate_to: localhost
+      run_once: true
       register: tstamp
+      become: false
 
     - name: Check if there is {{mail_body_file}}
       file:
@@ -67,7 +70,7 @@
     # Use shell because lineinfile has race condition
     # with echo >> we put race condition problem on filesystem
     - name: add line about change on host
-      shell: "printf '{{inventory_hostname}}:\x3CBR\x3E{{ yum_updates.results }}\x3CBR\x3E{{result.stdout_lines}}\x3CBR\x3E{{uptime.stdout}}\x3CBR\x3E\x3CBR\x3E' >> {{mail_body_file}}"
+      shell: "echo {{inventory_hostname}}:{{ yum_updates.results }} {{result.stdout_lines}} {{uptime.stdout}} >> {{mail_body_file}}"
       delegate_to: localhost
       #when: my_test.changed
       become: false
