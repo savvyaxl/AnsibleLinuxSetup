@@ -1,6 +1,9 @@
 ---
 - hosts: update
   gather_facts: no
+  vars_files:
+  - vault/passwords
+
   tasks:
     - name: Verify reboot
       command: uptime
