@@ -70,7 +70,7 @@
     # Use shell because lineinfile has race condition
     # with echo >> we put race condition problem on filesystem
     - name: add line about change on host
-      shell: "echo {{inventory_hostname}} : {{uptime.stdout}}\n{{ yum_updates.results }}\n{{result.stdout_lines}}  >> {{mail_body_file}}"
+      shell: "echo {{inventory_hostname}}:{{uptime.stdout}}{{ yum_updates.results }}{{result.stdout_lines}}  >> {{mail_body_file}}"
       delegate_to: localhost
       #when: my_test.changed
       become: false
