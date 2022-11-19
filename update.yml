@@ -44,6 +44,10 @@
     - debug:
         var: uptime.stdout_lines
 
+    - name: Get timestamp from the system
+      shell: "date"
+      register: tstamp
+
     - name: Check if there is {{mail_body_file}}
       file:
         state: absent
@@ -82,7 +86,7 @@
         password: "{{ gmail.password }}"
         to: savvyaxl@yahoo.com
         from: savvyaxl@gmail.com
-        subject: Ansible-report
+        subject: Ansible-report for {{tstamp.stdout}}
         body: "{{mail_body.stdout}}"
         secure: always
       delegate_to: localhost
