@@ -1,0 +1,19 @@
+---
+- hosts: update
+  gather_facts: no
+  tasks:
+    - name: Verify reboot
+      command: uptime
+      register: uptime
+
+    - name: Sending an e-mail using Legacy SSL to the remote machine
+      community.general.mail:
+        host: smtp.gmail.com
+        port: 465
+        password: "{{ password }}"
+        to: savvyaxl@yahoo.com
+        from: savvyaxl@gmail.com
+        subject: Ansible-report
+        body: System {{ inventory_hostname }} has been successfully provisioned. {{uptime}}
+        secure: always
+
