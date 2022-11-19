@@ -13,8 +13,8 @@
       community.general.mail:
         host: smtp.gmail.com
         port: 465
-        username: "{{ username }}"
-        password: "{{ password }}"
+        username: "{{ gmail.username }}"
+        password: "{{ gmail.password }}"
         to: savvyaxl@yahoo.com
         from: savvyaxl@gmail.com
         subject: Ansible-report
