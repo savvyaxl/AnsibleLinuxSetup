@@ -22,20 +22,20 @@
         var: result.stdout_lines
 
     - name: Reboot Server if Necessary
-      reboot:
+      shell: sleep 5 && reboot
       async: 1
       poll: 0
+      timeout: 10
       when: result.rc == 1 and inventory_hostname != "ansible"
       ignore_errors: yes
 
     - name: Pausing to allow server to shutdown and terminate our SSH connection
-      pause: seconds=100
-      when: result.rc == 1
+      pause: seconds=200
+      when: result.rc == 1 and inventory_hostname != "ansible"
 #
     - name: Verify reboot
       command: uptime
       register: uptime
-      when: result.rc == 1
 
     - debug:
         var: uptime.stdout_lines
