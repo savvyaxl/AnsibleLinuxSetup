@@ -1,2 +1,11 @@
+[update]
+web01
+storage01
+ansible
+msi
+
+[backup]
+web01
+
 [setup]
 web02
