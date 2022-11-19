@@ -1,5 +1,5 @@
 ---
-- hosts: setup
+- hosts: update
   gather_facts: no
   tasks:
     - name: Update all installed packages using YUM module
@@ -9,11 +9,6 @@
         update_cache: yes
         update_only: yes
       register: yum_updates
-
-    - name: Install Yum Utilities
-      yum:
-        name: yum-utils
-        state: latest
 
     - name: check to see if we need a reboot
       command: needs-restarting -r
@@ -39,5 +34,8 @@
 #
     - name: Verify reboot
       command: uptime
+      register: uptime
       when: result.rc == 1
 
+    - debug:
+        var: uptime.stdout_lines
