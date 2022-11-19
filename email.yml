@@ -35,7 +35,7 @@
     # Use shell because lineinfile has race condition
     # with echo >> we put race condition problem on filesystem
     - name: add line about change on host
-      shell: "echo {{uptime}} >> {{mail_body_file}}"
+      shell: "echo {{uptime.stdout}} >> {{mail_body_file}}"
       delegate_to: localhost
       when: my_test.changed
       become: false
