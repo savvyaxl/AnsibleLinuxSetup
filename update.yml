@@ -1,6 +1,8 @@
 ---
 - hosts: update
   gather_facts: no
+  vars:
+    mail_body_file: "/tmp/ansible-mailing-tmtghujm" 
   tasks:
     - name: Update all installed packages using YUM module
       yum:
@@ -39,3 +41,48 @@
 
     - debug:
         var: uptime.stdout_lines
+
+    - name: Check if there is {{mail_body_file}}
+      file:
+        state: absent
+        path: "{{mail_body_file}}"
+      delegate_to: localhost
+      run_once: true
+      become: false
+
+    - name: Create {{mail_body_file}}
+      file:
+        state: touch
+        path: "{{mail_body_file}}"
+      delegate_to: localhost
+      run_once: true
+      become: false
+
+    # Use shell because lineinfile has race condition
+    # with echo >> we put race condition problem on filesystem
+    - name: add line about change on host
+      shell: "echo {{inventory_hostname}}: {{uptime.stdout}} >> {{mail_body_file}}"
+      delegate_to: localhost
+      #when: my_test.changed
+      become: false
+
+    - name: get the mail body to variable
+      register: mail_body
+      command: "cat {{mail_body_file}}"
+      delegate_to: localhost
+      run_once: True
+
+    - name: Sending an e-mail using gmail with app key
+      community.general.mail:
+        host: smtp.gmail.com
+        port: 465
+        username: "{{ gmail.username }}"
+        password: "{{ gmail.password }}"
+        to: savvyaxl@yahoo.com
+        from: savvyaxl@gmail.com
+        subject: Ansible-report
+        body: "{{mail_body.stdout}}"
+        secure: always
+      delegate_to: localhost
+      run_once: True
+
