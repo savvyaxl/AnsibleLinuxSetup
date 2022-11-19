@@ -1,3 +1,4 @@
+#https://serverfault.com/questions/957380/ansible-one-email-alert-for-all-hosts
 ---
 - hosts: update
   gather_facts: no
