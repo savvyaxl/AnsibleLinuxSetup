@@ -3,11 +3,47 @@
   gather_facts: no
   vars_files:
   - vault/passwords
+  vars:
+    mail_body_file: "/tmp/ansible-mailing-tmtghujm" 
 
   tasks:
-    - name: Verify reboot
+    - name: Verify uptime
       command: uptime
       register: uptime
+
+    - name: Check if there is {{mail_body_file}}
+      file:
+        state: absent
+        path: "{{mail_body_file}}"
+      delegate_to: localhost
+      run_once: true
+      become: false
+
+    - name: Task looking for change, command always reports change so I used it for testing
+      command: "echo 123"  
+      register: my_test
+
+    - name: Create {{mail_body_file}}
+      file:
+        state: touch
+        path: "{{mail_body_file}}"
+      delegate_to: localhost
+      run_once: true
+      become: false
+
+    # Use shell because lineinfile has race condition
+    # with echo >> we put race condition problem on filesystem
+    - name: add line about change on host
+      shell: "echo {{uptime}} >> {{mail_body_file}}"
+      delegate_to: localhost
+      when: my_test.changed
+      become: false
+
+    - name: get the mail body to variable
+      register: mail_body
+      command: "cat {{mail_body_file}}"
+      delegate_to: localhost
+      run_once: True
 
     - name: Sending an e-mail using Legacy SSL to the remote machine
       community.general.mail:
@@ -18,6 +54,8 @@
         to: savvyaxl@yahoo.com
         from: savvyaxl@gmail.com
         subject: Ansible-report
-        body: System {{ inventory_hostname }} has been successfully provisioned. {{uptime}}
+        body: "{{mail_body.stdout}}"
         secure: always
       delegate_to: localhost
+      run_once: True
+
