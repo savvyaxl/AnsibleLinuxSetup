@@ -69,10 +69,22 @@
 
     # Use shell because lineinfile has race condition
     # with echo >> we put race condition problem on filesystem
-    - name: add line about change on host
-      shell: "echo {{inventory_hostname}}:{{uptime.stdout}}{{ yum_updates.results }}{{result.stdout_lines}}  >> {{mail_body_file}}"
+    #- name: add line about change on host
+    #  shell: "echo {{inventory_hostname}}:{{uptime.stdout}}{{ yum_updates.results }}{{result.stdout_lines}}  >> {{mail_body_file}}"
+    #  delegate_to: localhost
+    #  #when: my_test.changed
+    #  become: false
+
+    - name: Use j2 template to create body part
+      template:
+        src: templates/body.j2
+        dest: /tmp/{{inventory_hostname}}.body.html
+      delegate_to: localhost     
+      become: false
+
+    - name: add the individual runs
+      shell: "cat /tmp/{{inventory_hostname}}.body.html  >> {{mail_body_file}}"
       delegate_to: localhost
-      #when: my_test.changed
       become: false
 
     - name: get the mail body to variable
