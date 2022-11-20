@@ -3,6 +3,7 @@
   gather_facts: no
   vars_files:
   - vault/passwords
+  - vault/msg_groups.yml
   vars:
     mail_body_file: "/tmp/ansible-mailing-tmtghujm" 
   tasks:
@@ -19,11 +20,11 @@
       register: result
       ignore_errors: yes
 
-    - debug:
-        var: yum_updates
-
-    - debug:
-        var: result.stdout_lines
+    #- debug:
+    #    var: yum_updates
+#
+    #- debug:
+    #    var: result.stdout_lines
 
     - name: Reboot Server if Necessary
       shell: sleep 5 && reboot
@@ -41,8 +42,8 @@
       command: uptime
       register: uptime
 
-    - debug:
-        var: uptime.stdout_lines
+    #- debug:
+    #    var: uptime.stdout_lines
 
     - name: Get timestamp from the system
       shell: "date"
@@ -95,15 +96,15 @@
 
     - name: Sending an e-mail using gmail with app key
       community.general.mail:
-        host: smtp.gmail.com
-        port: 465
+        host: "{{ gmail.host }}"
+        port: "{{ gmail.port }}"
         username: "{{ gmail.username }}"
         password: "{{ gmail.password }}"
-        to: savvyaxl@yahoo.com
-        from: savvyaxl@gmail.com
+        to: "{{ updateAll.to }}"
+        from: "{{ updateAll.from }}"
         subject: Ansible-report for {{tstamp.stdout}}
         body: "{{mail_body.stdout}}"
-        secure: always
+        secure: "{{ gmail.secure }}"
       delegate_to: localhost
       run_once: True
       register: emailresult
