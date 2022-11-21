@@ -8,7 +8,7 @@
 
 - name: check to see if we need a reboot
   command: needs-restarting -r
-  register: restart_result
+  register: needsrestart
   ignore_errors: yes
 
 - name: Reboot Server if Necessary
@@ -16,12 +16,12 @@
   async: 1
   poll: 0
   timeout: 10
-  when: restart_result.rc == 1 and inventory_hostname != "ansible"
+  when: needsrestart.rc == 1 and inventory_hostname != "ansible"
   ignore_errors: yes
 
 - name: Pausing to allow server to shutdown and terminate our SSH connection
   pause: seconds=200
-  when: restart_result.rc == 1 and inventory_hostname != "ansible"
+  when: needsrestart.rc == 1 and inventory_hostname != "ansible"
 
 - name: Verify reboot
   command: uptime

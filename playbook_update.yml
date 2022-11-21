@@ -8,34 +8,9 @@
     mail_body_file: "/tmp/ansible-mailing-tmtghujm" 
   order: sorted
   tasks:
-    - name: Update all installed packages using YUM module
-      yum:
-        name: '*'
-        state: latest
-        update_cache: yes
-        update_only: yes
-      register: yum_updates
 
-    - name: check to see if we need a reboot
-      command: needs-restarting -r
-      register: needsrestart
-      ignore_errors: yes
-
-    - name: Reboot Server if Necessary
-      shell: sleep 5 && reboot
-      async: 1
-      poll: 0
-      timeout: 10
-      when: needsrestart.rc == 1 and inventory_hostname != "ansible"
-      ignore_errors: yes
-
-    - name: Pausing to allow server to shutdown and terminate our SSH connection
-      pause: seconds=200
-      when: needsrestart.rc == 1 and inventory_hostname != "ansible"
-#
-    - name: Verify reboot
-      command: uptime
-      register: uptime
+    - name: Import update_reboot_task
+      - include: update_reboot_task.yml
 
     - name: Get timestamp from the system
       shell: "date"

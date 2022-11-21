@@ -1,5 +1,5 @@
 <h1>{{ inventory_hostname }}</h1>
 <p><b>{{ uptime.stdout }}</b></p>
 <p>{{ yum_updates.results }}</p>
-<p>{{ result.stdout_lines[-2:] }}</p>
+<p>{{ needsrestart.stdout_lines[-2:] }}</p>
 
