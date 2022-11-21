@@ -101,6 +101,7 @@
         port: "{{ gmail.port }}"
         username: "{{ gmail.username  | default(omit) }}"
         password: "{{ gmail.password  | default(omit) }}"
+        subtype: html
         to: "{{ updateAll.to }}"
         from: "{{ updateAll.from }}"
         subject: Ansible-report for {{tstamp.stdout}}
