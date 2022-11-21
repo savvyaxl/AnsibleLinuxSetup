@@ -99,8 +99,8 @@
       community.general.mail:
         host: "{{ gmail.host }}"
         port: "{{ gmail.port }}"
-        username: "{{ gmail.username }}"
-        password: "{{ gmail.password }}"
+        username: "{{ gmail.username  | default(omit) }}"
+        password: "{{ gmail.password  | default(omit) }}"
         to: "{{ updateAll.to }}"
         from: "{{ updateAll.from }}"
         subject: Ansible-report for {{tstamp.stdout}}
