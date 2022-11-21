@@ -11,6 +11,7 @@
         path: /etc/ssh/sshd_config
         block: |
           Match User "{{ user }}"
+              ClientAliveInterval 0
               PasswordAuthentication no
               X11Forwarding no
               AllowTcpForwarding no
@@ -22,7 +23,7 @@
       user: 
         name: "{{ user }}"
 
-    - name: Edit sudoers
+    - name: Edit sudoers.d
       copy:
         dest: "/etc/sudoers.d/ansible"
         content: |
