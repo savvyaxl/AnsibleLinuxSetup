@@ -1,5 +1,5 @@
 ---
-- hosts: update 
+- hosts: localhost 
   gather_facts: no
   user: alex
   ask-become-pass: true
