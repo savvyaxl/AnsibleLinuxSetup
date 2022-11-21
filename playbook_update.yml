@@ -10,7 +10,7 @@
   tasks:
 
     - name: Import update_reboot_task
-      - include: update_reboot_task.yml
+      include: update_reboot_task.yml
 
     - name: Get timestamp from the system
       shell: "date"
