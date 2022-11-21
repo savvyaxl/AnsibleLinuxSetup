@@ -7,8 +7,11 @@
   vars:
     mail_body_file: "/tmp/ansible-mailing-tmtghujm" 
   order: sorted
-  tasks:
 
+  tasks:
     - name: run included tasks
       include: update_reboot_task.yml
+
+  post_tasks:
+    - name: run included post tasks
       include: email_task.yml
