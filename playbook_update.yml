@@ -52,6 +52,7 @@
       command: "cat {{mail_body_file}}"
       delegate_to: localhost
       run_once: True
+      become: false
 
     - name: Sending an e-mail using gmail with app key
       community.general.mail:
@@ -71,3 +72,4 @@
       until: emailresult is not failed
       retries: 3
       delay: 20
+      become: false
