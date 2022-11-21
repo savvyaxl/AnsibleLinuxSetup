@@ -1,0 +1,28 @@
+- name: Update all installed packages using YUM module
+  yum:
+    name: '*'
+    state: latest
+    update_cache: yes
+    update_only: yes
+  register: yum_updates
+
+- name: check to see if we need a reboot
+  command: needs-restarting -r
+  register: restart_result
+  ignore_errors: yes
+
+- name: Reboot Server if Necessary
+  shell: sleep 5 && reboot
+  async: 1
+  poll: 0
+  timeout: 10
+  when: restart_result.rc == 1 and inventory_hostname != "ansible"
+  ignore_errors: yes
+
+- name: Pausing to allow server to shutdown and terminate our SSH connection
+  pause: seconds=200
+  when: restart_result.rc == 1 and inventory_hostname != "ansible"
+
+- name: Verify reboot
+  command: uptime
+  register: uptime

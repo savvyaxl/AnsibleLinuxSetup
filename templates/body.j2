@@ -1,4 +1,5 @@
-{{ inventory_hostname }}: {{ uptime.stdout }}
-{{ yum_updates.results }}
-{{ result.stdout_lines[-2:] }}
+<h>{{ inventory_hostname }}</h>
+<p><b>{{ uptime.stdout }}</b></p>
+<p>{{ yum_updates.results }}</p>
+<p>{{ result.stdout_lines[-2:] }}</p>
 
