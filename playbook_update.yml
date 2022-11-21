@@ -10,8 +10,8 @@
 
   tasks:
     - name: run included tasks
-      include: update_reboot_task.yml
+      include: task_update_reboot.yml
 
   post_tasks:
     - name: run included post tasks
-      include: email_task.yml
+      include: task_email.yml
