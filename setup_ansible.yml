@@ -10,7 +10,7 @@
       ansible.builtin.blockinfile:
         path: /etc/ssh/sshd_config
         block: |
-          Match User "{{ user }}"
+          Match User {{ user }}
               ClientAliveInterval 0
               PasswordAuthentication no
               X11Forwarding no
