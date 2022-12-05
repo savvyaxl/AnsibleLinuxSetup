@@ -1,12 +1,15 @@
 ---
 - hosts: localhost 
   gather_facts: no
+  vars:
+    user: ansible
+    group: "{{user}}"
   tasks:
     - name: Setup sshd permission for ansible in /etc/ssh/sshd_config
       ansible.builtin.blockinfile:
         path: /etc/ssh/sshd_config
         block: |
-          Match User ansible
+          Match User {{user}}
               ClientAliveInterval 0
               PasswordAuthentication no
               X11Forwarding no
@@ -15,26 +18,27 @@
       notify:
         - Restart_sshd
 
-    - name: make sure .ssh exists
+    - name: make sure /home/{{user}}/.ssh exists
       file:
-        path: /home/ansible/.ssh
+        path: "/home/{{user}}/.ssh"
         state: directory
-        owner: ansible
-        group: ansible
+        owner: "{{user}}"
+        group: "{{group}}"
         mod: 0700
-      notify:
-        - Restart_sshd
+
+    - name: delete authorized_keys
+      file:
+        path: "/home/{{user}}/.ssh/authorized_keys"
+        state: absent
 
     - name: Modify authorized_keys
       ansible.builtin.lineinfile:
-        path: /home/ansible/.ssh/authorized_keys
+        path: "/home/{{user}}/.ssh/authorized_keys"
         line: from="192.168.0.56" ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC2bue64RNaff+S7rFIWObd41R2Moa5UMPQjJ3EuwMq2Ys68ZiYVd2/a6Y5DS+WL+FrhuqeWCyCKym+vgmxRE1u6Z49IjMhSKPWr/IkuEhlLFW3K35d4PC84XsAo+NpHkoTQCH/wlvR7806umsQYugvL0MFSvy/w9g316N59dmJ+S93z0/Y+ANzFou1GYNsiB42NE9zq1JX20B3mVhsr3jqbOpbS7GiuzvZJ6F7zIdDyFmG+3SjzdYPK5iLJEQriifhS42wvgcBz7agHL1lR0thhimu/OSNCyOqy1sdteKP+HJ4XTRNmp10oLp76sZUFBVxsMw94Laxb1+EZ1f9yYglcdqKVdExgtP7quVQB/7xc7oWsMgybIl1Sa6sspwWT71ig2jEJY8tO8FoSVAPm0YObfYTOA2YBlTgvFIu+pgjhtL7cUbx15epdsIyj8odRPmQmOeOzQRecf+I6MBPtZ0GNG/2mKUE2O/1pS1fju6eTsLmKjgyANwS+DY/sSNorX8= ansible@ansible.local
         state: present
-        owner: ansible
-        group: ansible
+        owner: "{{user}}"
+        group: "{{group}}"
         mod: 0600
-      notify:
-        - Restart_sshd
 
   handlers:
     - name: Restart_sshd
