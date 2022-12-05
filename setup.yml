@@ -24,7 +24,7 @@
         state: directory
         owner: "{{user}}"
         group: "{{group}}"
-        mod: 0700
+        mode: 0700
 
     - name: delete authorized_keys
       file:
