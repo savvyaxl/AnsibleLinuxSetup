@@ -31,6 +31,10 @@
         path: "/home/{{user}}/.ssh/authorized_keys"
         state: absent
 
+    - name: create authorized_keys
+      file:
+        path: "/home/{{user}}/.ssh/authorized_keys"
+
     - name: Modify authorized_keys
       ansible.builtin.lineinfile:
         path: "/home/{{user}}/.ssh/authorized_keys"
