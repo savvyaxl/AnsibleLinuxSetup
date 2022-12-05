@@ -5,7 +5,7 @@
     user: ansible
     group: "{{user}}"
   tasks:
-    - name: Setup sshd permission for ansible in /etc/ssh/sshd_config
+    - name: Setup sshd permission for {{user}} in /etc/ssh/sshd_config
       ansible.builtin.blockinfile:
         path: /etc/ssh/sshd_config
         block: |
@@ -26,12 +26,12 @@
         group: "{{group}}"
         mode: 0700
 
-    - name: delete authorized_keys
+    - name: delete authorized_keys for {{user}}
       file:
         path: "/home/{{user}}/.ssh/authorized_keys"
         state: absent
 
-    - name: create authorized_keys
+    - name: create authorized_keys for {{user}}
       shell: "touch /home/{{user}}/.ssh/authorized_keys"
 
     - name: Modify authorized_keys
