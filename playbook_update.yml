@@ -3,15 +3,15 @@
   gather_facts: no
   vars_files:
   - vault/passwords
-  - vault/msg_groups.yml
+  - vault/msg_groups
   vars:
     mail_body_file: "/tmp/ansible-mailing-tmtghujm" 
   order: sorted
 
   tasks:
     - name: run included tasks
-      include: tasks/task_update_reboot.yml
+      include: tasks/task_update_reboot
 
   post_tasks:
     - name: run included post tasks
-      include: tasks/task_email.yml
+      include: tasks/task_email
