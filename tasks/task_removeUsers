@@ -5,5 +5,3 @@
     regexp: '^HideUsers '
     insertafter: '^#HideUsers '
     state: present
-  notify:
-    - Restart_sshd
