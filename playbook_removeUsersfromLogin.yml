@@ -1,0 +1,13 @@
+---
+- hosts: msi
+  gather_facts: no
+  vars_files:
+  - vault/passwords
+  - vault/msg_groups
+  vars:
+    mail_body_file: "/tmp/ansible-mailing-tmtghujm" 
+  order: sorted
+
+  tasks:
+    - name: run included tasks
+      include: tasks/task_removeUsers
