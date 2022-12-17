@@ -2,6 +2,6 @@
   ansible.builtin.lineinfile:
     path: /etc/sddm.conf
     line: HideUsers=ansible,homeassistant,lpar2rrd
-    regexp: '^HideUsers '
-    insertafter: '^#HideUsers '
+    regexp: '^HideUsers'
+    insertafter: '^#HideUsers'
     state: present
