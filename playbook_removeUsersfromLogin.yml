@@ -10,4 +10,4 @@
 
   tasks:
     - name: run included tasks
-      include: tasks/task_removeUsers
+      include_tasks: tasks/task_removeUsers
