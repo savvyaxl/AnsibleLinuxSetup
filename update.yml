@@ -8,7 +8,6 @@
     mail_body_file: "/tmp/ansible_mailing_tmtghujm" 
     start_file: "/tmp/ansible_start_tmtghujm"
     end_file: "/tmp/ansible_end_tmtghujm"
-    compare_file: "/tmp/ansible_compare_tmtghujm"
   order: sorted
 
   tasks:
@@ -22,7 +21,7 @@
       loop:
         - "{{start_file}}"
         - "{{end_file}}"
-        - "{{compare_file}}"
+        - "{{mail_body_file}}"
 
     - name: Get timestamp from the system
       shell: "date"
@@ -80,22 +79,6 @@
       delegate_to: localhost
       run_once: true
       register: end_date
-      become: false
-
-    - name: Check if there is {{mail_body_file}}
-      file:
-        state: absent
-        path: "{{mail_body_file}}"
-      delegate_to: localhost
-      run_once: true
-      become: false
-
-    - name: Create {{mail_body_file}}
-      file:
-        state: touch
-        path: "{{mail_body_file}}"
-      delegate_to: localhost
-      run_once: true
       become: false
 
     - name: Use j2 template to create body part
