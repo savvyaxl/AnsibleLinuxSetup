@@ -13,7 +13,7 @@
 
   tasks:
     - name: Clear the files
-      file: "echo {{ inventory_hostname }} >> {{ start_file }}"
+      file:
         state: absent
         path: "{{item}}"
       delegate_to: localhost
