@@ -34,6 +34,12 @@
       shell: "echo {{ inventory_hostname }} >> {{ start_file }}"
       delegate_to: localhost
       become: false
+      register: bob
+
+    - name: debug
+      debug:
+        var: bob
+
 
     - name: Update all installed packages using YUM module
       yum:
