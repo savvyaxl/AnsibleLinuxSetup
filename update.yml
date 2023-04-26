@@ -59,10 +59,10 @@
       register: rebooted
 
     - name: debug
-      var: rebooted
+      msg: rebooted
 
     - name: debug
-      var: needsrestart
+      msg: needsrestart
 
     - name: Pausing to allow server to shutdown and terminate our SSH connection
       pause: seconds=200
