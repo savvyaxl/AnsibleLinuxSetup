@@ -68,7 +68,7 @@
     - name: Pausing to allow server to shutdown and terminate our SSH connection
       pause: seconds=200
       when: needsrestart.rc == 1
-#
+
     - name: Verify reboot
       command: uptime
       register: uptime
@@ -166,3 +166,23 @@
       until: emailresult is not failed
       retries: 3
       delay: 20
+
+    - name: Clear the files
+      file:
+        state: absent
+        path: "{{item}}"
+      delegate_to: localhost
+      become: false
+      run_once: true
+      loop:
+        - "{{start_file}}"
+        - "{{end_file}}"
+        - "{{mail_body_file}}"
+
+    - name: delete all
+      file:
+        state: absent
+        path: /tmp/{{inventory_hostname}}.body.html
+      delegate_to: localhost
+      become: false
+
