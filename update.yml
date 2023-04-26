@@ -12,6 +12,18 @@
   order: sorted
 
   tasks:
+    - name: Clear the files
+      file: "echo {{ inventory_hostname }} >> {{ start_file }}"
+        state: absent
+        path: "{{item}}"
+      delegate_to: localhost
+      become: false
+      run_once: true
+      loop:
+        - "{{start_file}}"
+        - "{{end_file}}"
+        - "{{compare_file}}"
+
     - name: Get timestamp from the system
       shell: "date"
       delegate_to: localhost
@@ -20,7 +32,7 @@
       become: false
 
     - name: Create the start file
-      shell: "echo {{ inventory_hostname }} > {{ start_file }}"
+      shell: "echo {{ inventory_hostname }} >> {{ start_file }}"
       delegate_to: localhost
       become: false
 
@@ -85,7 +97,7 @@
       become: false
 
     - name: Create the end file
-      shell: "echo {{ inventory_hostname }} > {{ end_file }}"
+      shell: "echo {{ inventory_hostname }} >> {{ end_file }}"
       delegate_to: localhost
       become: false
 
@@ -109,14 +121,14 @@
 
     - name: Start time
       shell: |
-        echo "<p>Start: {{ start_date }}</p>" >> {{ mail_body_file }}
+        echo "<p>Start: {{ start_date.stdout }}</p>" >> {{ mail_body_file }}
       delegate_to: localhost
       become: false
       run_once: True
 
     - name: End time
       shell: |
-        echo "<p>End: {{ end_date }}</p>" >> {{ mail_body_file }}
+        echo "<p>End: {{ end_date.stdout }}</p>" >> {{ mail_body_file }}
       delegate_to: localhost
       become: false
       run_once: True
