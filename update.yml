@@ -91,7 +91,7 @@
 
     - name: Create the summery file
       shell: |
-        (for x in $(cat {{start_file}}) | sort 
+        (for x in $(cat {{start_file}} | sort)
         do
         z=" Failed"
         for y in $(cat {{end_file}})
