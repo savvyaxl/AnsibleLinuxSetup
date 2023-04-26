@@ -56,6 +56,13 @@
       timeout: 10
       when: needsrestart.rc == 1 and inventory_hostname != "ansible"
       ignore_errors: yes
+      register: rebooted
+
+    - name: debug
+      var: rebooted
+
+    - name: debug
+      var: needsrestart
 
     - name: Pausing to allow server to shutdown and terminate our SSH connection
       pause: seconds=200
