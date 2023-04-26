@@ -141,7 +141,7 @@
         subtype: html
         to: "{{ updateAll.to }}"
         from: "{{ updateAll.from }}"
-        subject: Ansible-report for {{tstamp.stdout}}
+        subject: Ansible-report for {{start_date.stdout}}
         body: "{{mail_body.stdout}}"
         secure: "{{ gmail.secure }}"
       delegate_to: localhost
