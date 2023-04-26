@@ -97,6 +97,7 @@
       shell: echo "<table>" >> {{ mail_body_file }}
       delegate_to: localhost
       become: false
+      run_once: True
 
     - name: Create the summery file
       shell: |
@@ -120,6 +121,7 @@
       shell: echo "</table>" >> {{ mail_body_file }}
       delegate_to: localhost
       become: false
+      run_once: True
 
     - name: Start time
       shell: |
