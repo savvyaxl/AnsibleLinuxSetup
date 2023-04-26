@@ -68,7 +68,7 @@
 
     - name: Pausing to allow server to shutdown and terminate our SSH connection
       pause: seconds=200
-      when: needsrestart.rc == 1 and inventory_hostname != "ansible"
+      when: needsrestart.rc == 1
 #
     - name: Verify reboot
       command: uptime
@@ -110,6 +110,11 @@
       delegate_to: localhost
       become: false
 
+    - name: Create table
+      shell: echo "<table>" >> {{ end_file }}
+      delegate_to: localhost
+      become: false
+
     - name: Create the summery file
       shell: |
         (for x in $(cat {{start_file}} | sort)
@@ -122,11 +127,16 @@
         z=" Success"
         fi
         done
-        echo "$x $z <BR>"
+        echo "<td><tr>$x</tr><tr>$z</tr></td>"
         done ) >> {{mail_body_file}}
       delegate_to: localhost
       become: false
       run_once: True
+
+    - name: Create table end
+      shell: echo "</table>" >> {{ end_file }}
+      delegate_to: localhost
+      become: false
 
     - name: Start time
       shell: |
