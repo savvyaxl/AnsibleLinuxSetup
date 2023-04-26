@@ -110,7 +110,7 @@
         z=" Success"
         fi
         done
-        echo "<td><tr>$x</tr><tr>$z</tr></td>"
+        echo "<tr><td>$x</td><td>$z</td></tr>"
         done ) >> {{mail_body_file}}
       delegate_to: localhost
       become: false
