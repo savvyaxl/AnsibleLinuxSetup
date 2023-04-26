@@ -108,13 +108,13 @@
         z=" Failed"
         for y in $(cat {{end_file}})
         do
-        if [["x"$x == "x"$y ]]
+        if [[ "x$x" == "x$y" ]]
         then
         z=" Success"
         fi
         done
         echo "$x $z <BR>"
-        done ) > {{mail_body_file}}
+        done ) >> {{mail_body_file}}
       delegate_to: localhost
       become: false
       run_once: True
