@@ -129,7 +129,7 @@
             then
                 echo "$(grep ${list} {{ tmp1_file }} )"'<td>Failed</td>' >> {{ tmp2_file }}
             else
-                echo "$(grep ${list} {{ tmp1_file }} )"'<td>OK</td>' >> {{ tmp2_file }}
+                echo "$(grep ${list} {{ tmp1_file }} )"'<td>No Updates</td>' >> {{ tmp2_file }}
             fi
         done
         )
@@ -159,7 +159,7 @@
             then
                 echo "$(grep ${list} {{ tmp2_file }} )"'<td>Failed</td>' >> {{ tmp3_file }}
             else
-                echo "$(grep ${list} {{ tmp2_file }} )"'<td>OK</td>' >> {{ tmp3_file }}
+                echo "$(grep ${list} {{ tmp2_file }} )"'<td>Restart Not Needed</td>' >> {{ tmp3_file }}
             fi
         done
         )
@@ -206,6 +206,13 @@
     - name: Create the tmp4_file file for Restarted
       shell: |
         (echo '<table>' >> {{ tmp4_file }}
+        echo '<th>' >> {{ tmp4_file }}
+        echo '<td>HostName<td>' >> {{ tmp4_file }}
+        echo '<td>Connected<td>' >> {{ tmp4_file }}
+        echo '<td>Updated<td>' >> {{ tmp4_file }}
+        echo '<td>Needs Reboot<td>' >> {{ tmp4_file }}
+        echo '<td>Rebooted<td>' >> {{ tmp4_file }}
+        echo '</th>' >> {{ tmp4_file }}
         for list in $(cat {{ start_file }} | sort )
         do
             echo '<tr>' >> {{ tmp4_file }}
@@ -216,7 +223,12 @@
             then
                 echo "$(grep ${list} {{ tmp3_file }} )"'<td>Failed</td>' >> {{ tmp4_file }}
             else
-                echo "$(grep ${list} {{ tmp3_file }} )"'<td>OK</td>' >> {{ tmp4_file }}
+                if [[ $(grep "${list}" {{ needsrestart_file }} ) ]]
+                then
+                  echo "$(grep ${list} {{ tmp3_file }} )"'<td>Restart not needed</td>' >> {{ tmp4_file }}
+                else
+                  echo "$(grep ${list} {{ tmp3_file }} )"'<td>Need Restart</td>' >> {{ tmp4_file }}
+                fi
             fi
             echo '</tr>' >> {{ tmp4_file }}
         done
@@ -240,20 +252,8 @@
       delegate_to: localhost
       become: false
 
-    - name: Create table
-      shell: echo "<table>" >> {{ mail_body_file }}
-      delegate_to: localhost
-      become: false
-      run_once: True
-
     - name: Create the summery file
       shell: cat {{tmp4_file}} >> {{mail_body_file}}
-      delegate_to: localhost
-      become: false
-      run_once: True
-
-    - name: Create table end
-      shell: echo "</table>" >> {{ mail_body_file }}
       delegate_to: localhost
       become: false
       run_once: True
