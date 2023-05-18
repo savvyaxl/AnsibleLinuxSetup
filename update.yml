@@ -222,13 +222,13 @@
       run_once: True
 
     - name: Create the summery file
-      shell: cat {{connected_file}}) >> {{mail_body_file}}
+      shell: cat {{tmp4_file}} >> {{mail_body_file}}
       delegate_to: localhost
       become: false
       run_once: True
 
     - name: Create table end
-      shell: cat  {{ tmp4_file }} >> {{ mail_body_file }}
+      shell: echo "</table>" >> {{ mail_body_file }}
       delegate_to: localhost
       become: false
       run_once: True
