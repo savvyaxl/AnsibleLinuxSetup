@@ -103,12 +103,12 @@
         do
             if [[ $(grep "${list}" {{ updated_file }} ) ]]
             then
-                echo "$(grep ${list} out_ )"'<td>Updated</td>' >> {{ tmp2_file }}
+                echo "$(grep ${list} {{ tmp1_file }} )"'<td>Updated</td>' >> {{ tmp2_file }}
             elif [[ ! $(grep "${list}" connected ) ]]
             then
-                echo "$(grep ${list} out_ )"'<td>Failed</td>' >> {{ tmp2_file }}
+                echo "$(grep ${list} {{ tmp1_file }} )"'<td>Failed</td>' >> {{ tmp2_file }}
             else
-                echo "$(grep ${list} out_ )"'<td>OK</td>' >> {{ tmp2_file }}
+                echo "$(grep ${list} {{ tmp1_file }} )"'<td>OK</td>' >> {{ tmp2_file }}
             fi
         done
         )
@@ -127,21 +127,21 @@
       when: needsrestart.rc == 1
       become: false
 
-    - name: Create the tmp2_file file
+    - name: Create the tmp2_file file for NeedsReStart
       shell: |
-        (for list in $(cat start_file )
+        (for list in $(cat list )
         do
-            if [[ $(grep "${list}" updated ) ]]
+            if [[ $(grep "${list}" {{ needsrestart_file }} ) ]]
             then
-                echo "$(grep ${list} out_ )"'<td>Updated</td>' >> out
+                echo "$(grep ${list} {{ tmp2_file }} )"'<td>NeedsReStart</td>' >> {{ tmp3_file }}
             elif [[ ! $(grep "${list}" connected ) ]]
             then
-                echo "$(grep ${list} out_ )"'<td>Failed</td>' >> out
+                echo "$(grep ${list} {{ tmp2_file }} )"'<td>Failed</td>' >> {{ tmp3_file }}
             else
-                echo "$(grep ${list} out_ )"'<td>OK</td>' >> out
+                echo "$(grep ${list} {{ tmp2_file }} )"'<td>OK</td>' >> {{ tmp3_file }}
             fi
         done
-        ) >> {{mail_body_file}}
+        )
       delegate_to: localhost
       become: false
       run_once: True
