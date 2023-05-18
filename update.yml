@@ -206,13 +206,9 @@
     - name: Create the tmp4_file file for Restarted
       shell: |
         (echo '<table>' >> {{ tmp4_file }}
-        echo '<th>' >> {{ tmp4_file }}
-        echo '<td>HostName<td>' >> {{ tmp4_file }}
-        echo '<td>Connected<td>' >> {{ tmp4_file }}
-        echo '<td>Updated<td>' >> {{ tmp4_file }}
-        echo '<td>Needs Reboot<td>' >> {{ tmp4_file }}
-        echo '<td>Rebooted<td>' >> {{ tmp4_file }}
-        echo '</th>' >> {{ tmp4_file }}
+        echo '<tr>' >> {{ tmp4_file }}
+        echo '<td>HostName</td><td>Connected</td><td>Updated</td><td>Needs Reboot</td><td>Rebooted</td>' >> {{ tmp4_file }}
+        echo '</tr>' >> {{ tmp4_file }}
         for list in $(cat {{ start_file }} | sort )
         do
             echo '<tr>' >> {{ tmp4_file }}
@@ -223,11 +219,11 @@
             then
                 echo "$(grep ${list} {{ tmp3_file }} )"'<td>Failed</td>' >> {{ tmp4_file }}
             else
-                if [[ $(grep "${list}" {{ needsrestart_file }} ) ]]
+                if [[ ! $(grep "${list}" {{ needsrestart_file }} ) ]]
                 then
                   echo "$(grep ${list} {{ tmp3_file }} )"'<td>Restart not needed</td>' >> {{ tmp4_file }}
                 else
-                  echo "$(grep ${list} {{ tmp3_file }} )"'<td>Need Restart</td>' >> {{ tmp4_file }}
+                  echo "$(grep ${list} {{ tmp3_file }} )"'<td>Needs Restart</td>' >> {{ tmp4_file }}
                 fi
             fi
             echo '</tr>' >> {{ tmp4_file }}
