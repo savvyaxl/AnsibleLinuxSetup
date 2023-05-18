@@ -205,7 +205,7 @@
 
     - name: Create the tmp4_file file for Restarted
       shell: |
-        (echo '<table>' >> {{ tmp4_file }}
+        (echo '<table border=1>' >> {{ tmp4_file }}
         echo '<tr>' >> {{ tmp4_file }}
         echo '<td>HostName</td><td>Connected</td><td>Updated</td><td>Needs Reboot</td><td>Rebooted</td>' >> {{ tmp4_file }}
         echo '</tr>' >> {{ tmp4_file }}
