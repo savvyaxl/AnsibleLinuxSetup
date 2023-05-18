@@ -134,7 +134,7 @@
             if [[ $(grep "${list}" {{ needsrestart_file }} ) ]]
             then
                 echo "$(grep ${list} {{ tmp2_file }} )"'<td>NeedsReStart</td>' >> {{ tmp3_file }}
-            elif [[ ! $(grep "${list}" connected ) ]]
+            elif [[ ! $(grep "${list}" {{ connected_file }} ) ]]
             then
                 echo "$(grep ${list} {{ tmp2_file }} )"'<td>Failed</td>' >> {{ tmp3_file }}
             else
@@ -177,9 +177,9 @@
       ignore_errors: yes
 
     - name: Create the Restarted file
-      shell: "echo {{ inventory_hostname }} >> {{ needsrestart_file }}"
+      shell: "echo {{ inventory_hostname }} >> {{ restared_file }}"
       delegate_to: localhost
-      when: needsrestart.rc == 1
+      when: needsrestart2.rc == 0 and needsrestart.rc == 1
       become: false
 
     - name: Create the tmp4_file file for Restarted
@@ -189,7 +189,7 @@
             if [[ $(grep "${list}" {{ restared_file }} ) ]]
             then
                 echo "$(grep ${list} {{ tmp3_file }} )"'<td>Restarted</td>' >> {{ tmp4_file }}
-            elif [[ ! $(grep "${list}" connected ) ]]
+            elif [[ ! $(grep "${list}" {{ connected_file }} ) ]]
             then
                 echo "$(grep ${list} {{ tmp3_file }} )"'<td>Failed</td>' >> {{ tmp4_file }}
             else
@@ -215,11 +215,6 @@
       delegate_to: localhost
       become: false
 
-    - name: Create the end file
-      shell: "echo {{ inventory_hostname }} >> {{ connected_file }}"
-      delegate_to: localhost
-      become: false
-
     - name: Create table
       shell: echo "<table>" >> {{ mail_body_file }}
       delegate_to: localhost
@@ -227,25 +222,13 @@
       run_once: True
 
     - name: Create the summery file
-      shell: |
-        (for x in $(cat {{start_file}} | sort)
-        do
-        z=" Failed"
-        for y in $(cat {{connected_file}})
-        do
-        if [[ "x$x" == "x$y" ]]
-        then
-        z=" Success"
-        fi
-        done
-        echo "<tr><td>$x</td><td>$z</td></tr>"
-        done ) >> {{mail_body_file}}
+      shell: cat {{connected_file}}) >> {{mail_body_file}}
       delegate_to: localhost
       become: false
       run_once: True
 
     - name: Create table end
-      shell: echo "</table>" >> {{ mail_body_file }}
+      shell: cat  {{ tmp4_file }} >> {{ mail_body_file }}
       delegate_to: localhost
       become: false
       run_once: True
