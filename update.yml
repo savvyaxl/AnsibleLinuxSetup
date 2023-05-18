@@ -78,10 +78,10 @@
     - name: Create the updated file
       shell: "echo {{ inventory_hostname }} >> {{ updated_file }}"
       delegate_to: localhost
-      when: yum_updates.rc == 1
+      when: yum_updates.changed
       become: false
 
-    - name: Create the tmp1_file file
+    - name: Create the tmp1_file file for connected
       shell: |
         (for list in $(cat {{ start_file }} )
           do
@@ -92,7 +92,26 @@
                   echo "<td>${list}</td>"'<td>Failed</td>' >> {{ tmp1_file }}
               fi
           done
-          ) >> {{mail_body_file}}
+          )
+      delegate_to: localhost
+      become: false
+      run_once: True
+
+    - name: Create the tmp2_file file for updated
+      shell: |
+        (for list in $(cat {{ start_file }} )
+        do
+            if [[ $(grep "${list}" {{ updated_file }} ) ]]
+            then
+                echo "$(grep ${list} out_ )"'<td>Updated</td>' >> {{ tmp2_file }}
+            elif [[ ! $(grep "${list}" connected ) ]]
+            then
+                echo "$(grep ${list} out_ )"'<td>Failed</td>' >> {{ tmp2_file }}
+            else
+                echo "$(grep ${list} out_ )"'<td>OK</td>' >> {{ tmp2_file }}
+            fi
+        done
+        )
       delegate_to: localhost
       become: false
       run_once: True
@@ -183,7 +202,7 @@
         (for x in $(cat {{start_file}} | sort)
         do
         z=" Failed"
-        for y in $(cat {{end_file}})
+        for y in $(cat {{connected_file}})
         do
         if [[ "x$x" == "x$y" ]]
         then
