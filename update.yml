@@ -125,7 +125,7 @@
             if [[ $(grep "${list}" {{ updated_file }} ) ]]
             then
                 echo "$(grep ${list} {{ tmp1_file }} )"'<td>Updated</td>' >> {{ tmp2_file }}
-            elif [[ ! $(grep "${list}" connected ) ]]
+            elif [[ ! $(grep "${list}" {{ connected_file }} ) ]]
             then
                 echo "$(grep ${list} {{ tmp1_file }} )"'<td>Failed</td>' >> {{ tmp2_file }}
             else
