@@ -206,7 +206,7 @@
     - name: Create the tmp4_file file for Restarted
       shell: |
         (echo '<table>' >> {{ tmp4_file }}
-        for list in $(cat {{ start_file }} )
+        for list in $(cat {{ start_file }} | sort )
         do
             echo '<tr>' >> {{ tmp4_file }}
             if [[ $(grep "${list}" {{ restared_file }} ) ]]
