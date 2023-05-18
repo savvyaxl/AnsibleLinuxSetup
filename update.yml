@@ -7,7 +7,16 @@
   vars:
     mail_body_file: "/tmp/ansible_mailing_tmtghujm" 
     start_file: "/tmp/ansible_start_tmtghujm"
-    end_file: "/tmp/ansible_end_tmtghujm"
+    connected_file: "/tmp/ansible_connected_tmtghujm"
+    needsrestart_file: "/tmp/ansible_needsrestart_tmtghujm"
+    updated_file: "/tmp/ansible_updated_tmtghujm"
+    restared_file: "/tmp/ansible_restared_tmtghujm"
+    tmp1_file: "/tmp/ansible_tmp1_tmtghujm"
+    tmp2_file: "/tmp/ansible_tmp2_tmtghujm"
+    tmp3_file: "/tmp/ansible_tmp3_tmtghujm"
+    tmp4_file: "/tmp/ansible_tmp4_tmtghujm"
+    tmp5_file: "/tmp/ansible_tmp5_tmtghujm"
+    tmp6_file: "/tmp/ansible_tmp6_tmtghujm"
   order: sorted
 
   tasks:
@@ -19,9 +28,18 @@
       become: false
       run_once: true
       loop:
-        - "{{start_file}}"
-        - "{{end_file}}"
         - "{{mail_body_file}}"
+        - "{{start_file}}"
+        - "{{connected_file}}"
+        - "{{updated_file}}"
+        - "{{needsrestart_file}}"
+        - "{{restared_file}}"
+        - "{{tmp1_file}}"
+        - "{{tmp2_file}}"
+        - "{{tmp3_file}}"
+        - "{{tmp4_file}}"
+        - "{{tmp5_file}}"
+        - "{{tmp6_file}}"
 
     - name: Get timestamp from the system
       shell: "date"
@@ -40,7 +58,6 @@
       debug:
         var: bob
 
-
     - name: Update all installed packages using YUM module
       yum:
         name: '*'
@@ -49,10 +66,66 @@
         update_only: yes
       register: yum_updates
 
+    - name: debug
+      debug:
+        var: yum_updates
+
+    - name: Create the connected file
+      shell: "echo {{ inventory_hostname }} >> {{ connected_file }}"
+      delegate_to: localhost
+      become: false
+
+    - name: Create the updated file
+      shell: "echo {{ inventory_hostname }} >> {{ updated_file }}"
+      delegate_to: localhost
+      when: yum_updates.rc == 1
+      become: false
+
+    - name: Create the tmp1_file file
+      shell: |
+        (for list in $(cat {{ start_file }} )
+          do
+              if [[ $(grep "${list}" {{ connected_file }} ) ]]
+              then
+                  echo "<td>${list}</td>"'<td>Success</td>' >> {{ tmp1_file }}
+              else
+                  echo "<td>${list}</td>"'<td>Failed</td>' >> {{ tmp1_file }}
+              fi
+          done
+          ) >> {{mail_body_file}}
+      delegate_to: localhost
+      become: false
+      run_once: True
+
     - name: check to see if we need a reboot
       command: needs-restarting -r
       register: needsrestart
       ignore_errors: yes
+
+    - name: Create the needsrestart file
+      shell: "echo {{ inventory_hostname }} >> {{ needsrestart_file }}"
+      delegate_to: localhost
+      when: needsrestart.rc == 1
+      become: false
+
+    - name: Create the tmp2_file file
+      shell: |
+        (for list in $(cat start_file )
+        do
+            if [[ $(grep "${list}" updated ) ]]
+            then
+                echo "$(grep ${list} out_ )"'<td>Updated</td>' >> out
+            elif [[ ! $(grep "${list}" connected ) ]]
+            then
+                echo "$(grep ${list} out_ )"'<td>Failed</td>' >> out
+            else
+                echo "$(grep ${list} out_ )"'<td>OK</td>' >> out
+            fi
+        done
+        ) >> {{mail_body_file}}
+      delegate_to: localhost
+      become: false
+      run_once: True
 
     - name: Reboot Server if Necessary
       shell: sleep 5 && reboot
