@@ -187,7 +187,7 @@
       become: false
 
     - name: Create the end file
-      shell: "echo {{ inventory_hostname }} >> {{ end_file }}"
+      shell: "echo {{ inventory_hostname }} >> {{ connected_file }}"
       delegate_to: localhost
       become: false
 
@@ -274,7 +274,7 @@
       run_once: true
       loop:
         - "{{start_file}}"
-        - "{{end_file}}"
+        - "{{connected_file}}"
         - "{{mail_body_file}}"
 
     - name: delete all
