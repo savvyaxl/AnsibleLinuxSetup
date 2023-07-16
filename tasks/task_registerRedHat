@@ -7,6 +7,6 @@
 - name: Register as user (RedHat.username) with password (somepass) and auto-subscribe to available content.
   community.general.redhat_subscription:
     state: present
-    username: RedHat.username
-    password: RedHat.password
+    username: "{{ RedHat.username }}"
+    password: "{{ RedHat.password }}"
     auto_attach: true
