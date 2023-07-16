@@ -1,0 +1,17 @@
+---
+- hosts: register
+  gather_facts: no
+  vars_files:
+  - vault/passwords
+  - vault/msg_groups
+  vars:
+    mail_body_file: "/tmp/ansible-mailing-tmtghujm" 
+  order: sorted
+
+  tasks:
+    - name: run included tasks
+      include: tasks/task_registerRedHat
+
+  #post_tasks:
+  #  - name: run included post tasks
+  #    include: tasks/task_email
