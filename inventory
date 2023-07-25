@@ -3,7 +3,7 @@ web01
 web02
 storage01
 ansible
-msi
+4670k
 
 [backup]
 web01
