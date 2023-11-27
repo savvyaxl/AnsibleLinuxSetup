@@ -1,5 +1,5 @@
 ---
-- hosts: localhost 
+- hosts: setupAnsible 
   gather_facts: no
   remote_user: alex
   vars:
@@ -51,7 +51,7 @@
     - name: Add key authorized_keys
       ansible.builtin.lineinfile:
         path: /home/{{ user }}/.ssh/authorized_keys
-        line: from="192.168.0.56" ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC2bue64RNaff+S7rFIWObd41R2Moa5UMPQjJ3EuwMq2Ys68ZiYVd2/a6Y5DS+WL+FrhuqeWCyCKym+vgmxRE1u6Z49IjMhSKPWr/IkuEhlLFW3K35d4PC84XsAo+NpHkoTQCH/wlvR7806umsQYugvL0MFSvy/w9g316N59dmJ+S93z0/Y+ANzFou1GYNsiB42NE9zq1JX20B3mVhsr3jqbOpbS7GiuzvZJ6F7zIdDyFmG+3SjzdYPK5iLJEQriifhS42wvgcBz7agHL1lR0thhimu/OSNCyOqy1sdteKP+HJ4XTRNmp10oLp76sZUFBVxsMw94Laxb1+EZ1f9yYglcdqKVdExgtP7quVQB/7xc7oWsMgybIl1Sa6sspwWT71ig2jEJY8tO8FoSVAPm0YObfYTOA2YBlTgvFIu+pgjhtL7cUbx15epdsIyj8odRPmQmOeOzQRecf+I6MBPtZ0GNG/2mKUE2O/1pS1fju6eTsLmKjgyANwS+DY/sSNorX8= ansible@ansible.local
+        line: from="192.168.0.71" ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBN9NoEX5pC3HkOpTRyZwk7oWgP2mxnT9Dzn9rTM5hE0B/Uiz+m/zKU8sTR0I5/s5SPFd/Xk/z70p9HsA0L1Mkoo= ansible@node02.savvyaxl.com.br
         state: present
 
   handlers:
