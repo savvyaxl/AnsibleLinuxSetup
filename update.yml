@@ -129,7 +129,7 @@
             then
                 echo "$(grep ${list} {{ tmp1_file }} )"'<td>Failed</td>' >> {{ tmp2_file }}
             else
-                echo "$(grep ${list} {{ tmp1_file }} )"'<td>No Updates</td>' >> {{ tmp2_file }}
+                echo "$(grep ${list} {{ tmp1_file }} )"'<td>OK</td>' >> {{ tmp2_file }}
             fi
         done
         )
@@ -154,12 +154,12 @@
         do
             if [[ $(grep "${list}" {{ needsrestart_file }} ) ]]
             then
-                echo "$(grep ${list} {{ tmp2_file }} )"'<td>NeedsReStart</td>' >> {{ tmp3_file }}
+                echo "$(grep ${list} {{ tmp2_file }} )"'<td>Restart Needed</td>' >> {{ tmp3_file }}
             elif [[ ! $(grep "${list}" {{ connected_file }} ) ]]
             then
                 echo "$(grep ${list} {{ tmp2_file }} )"'<td>Failed</td>' >> {{ tmp3_file }}
             else
-                echo "$(grep ${list} {{ tmp2_file }} )"'<td>Restart Not Needed</td>' >> {{ tmp3_file }}
+                echo "$(grep ${list} {{ tmp2_file }} )"'<td>OK</td>' >> {{ tmp3_file }}
             fi
         done
         )
@@ -221,7 +221,7 @@
             else
                 if [[ ! $(grep "${list}" {{ needsrestart_file }} ) ]]
                 then
-                  echo "$(grep ${list} {{ tmp3_file }} )"'<td>Restart Not Needed</td>' >> {{ tmp4_file }}
+                  echo "$(grep ${list} {{ tmp3_file }} )"'<td>OK</td>' >> {{ tmp4_file }}
                 else
                   echo "$(grep ${list} {{ tmp3_file }} )"'<td>Needs Restart</td>' >> {{ tmp4_file }}
                 fi
