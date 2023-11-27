@@ -1,15 +1,19 @@
 [update]
-web01
-web02
-storage01
-ansible
-4670k
+#web01
+#web02
+node01.nfs.info
+node02.nfs.info
+4670k.nfs.info
+
+
+[setupAnsible]
+storage01.nfs.info
 
 [backup]
 web01
 
 [setup]
-web02
+ansible.nfs.info
 
 [register]
 web01
