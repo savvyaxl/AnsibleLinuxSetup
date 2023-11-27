@@ -17,6 +17,8 @@
     tmp4_file: "/tmp/ansible_tmp4_tmtghujm"
     tmp5_file: "/tmp/ansible_tmp5_tmtghujm"
     tmp6_file: "/tmp/ansible_tmp6_tmtghujm"
+    no_restart:
+      - node01.nfs.info
   order: sorted
 
   tasks:
@@ -172,7 +174,7 @@
       async: 1
       poll: 0
       timeout: 10
-      when: needsrestart.rc == 1 and inventory_hostname != "ansible"
+      when: needsrestart.rc == 1 and inventory_hostname not in no_restart
       ignore_errors: yes
       register: rebooted
 
