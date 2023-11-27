@@ -154,7 +154,7 @@
         do
             if [[ $(grep "${list}" {{ needsrestart_file }} ) ]]
             then
-                echo "$(grep ${list} {{ tmp2_file }} )"'<td>Restart Needed</td>' >> {{ tmp3_file }}
+                echo "$(grep ${list} {{ tmp2_file }} )"'<td>Needs Restart</td>' >> {{ tmp3_file }}
             elif [[ ! $(grep "${list}" {{ connected_file }} ) ]]
             then
                 echo "$(grep ${list} {{ tmp2_file }} )"'<td>Failed</td>' >> {{ tmp3_file }}
@@ -206,9 +206,6 @@
     - name: Create the tmp4_file file for Restarted
       shell: |
         (echo '<table>' >> {{ tmp4_file }}
-        echo '<tr>' >> {{ tmp4_file }}
-        echo '<td>HostName</td><td>Connected</td><td>Updates</td><td>Needs Reboot</td><td>Rebooted</td>' >> {{ tmp4_file }}
-        echo '</tr>' >> {{ tmp4_file }}
         for list in $(cat {{ start_file }} | sort )
         do
             echo '<tr>' >> {{ tmp4_file }}
@@ -290,7 +287,7 @@
         from: "{{ updateAll.from }}"
         subject: Ansible-report for {{start_date.stdout}}
         body: "{{mail_body.stdout}}"
-        secure: "{{ gmail.secure }}"
+        #secure: "{{ gmail.secure }}"
       delegate_to: localhost
       run_once: True
       register: emailresult
