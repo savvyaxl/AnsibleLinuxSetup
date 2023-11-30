@@ -6,8 +6,8 @@ node02.nfs.info
 4670k.nfs.info
 
 
-[setupAnsible]
-storage01.nfs.info
+[removeusers]
+4670k.nfs.info
 
 [backup]
 web01
