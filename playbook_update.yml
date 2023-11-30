@@ -23,7 +23,7 @@
 
   pre_tasks:
     - name: run included Pre-tasks
-      include_task: "{{outer_item}}"
+      include: "{{outer_item}}"
       loop_control:
         loop_var: outer_item
       loop:
