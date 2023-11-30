@@ -1,0 +1,327 @@
+---
+- hosts: update
+  gather_facts: no
+  vars_files:
+  - vault/passwords
+  - vault/msg_groups.yml
+  vars:
+    mail_body_file: "/tmp/ansible_mailing_tmtghujm" 
+    start_file: "/tmp/ansible_start_tmtghujm"
+    connected_file: "/tmp/ansible_connected_tmtghujm"
+    needsrestart_file: "/tmp/ansible_needsrestart_tmtghujm"
+    updated_file: "/tmp/ansible_updated_tmtghujm"
+    restared_file: "/tmp/ansible_restared_tmtghujm"
+    tmp1_file: "/tmp/ansible_tmp1_tmtghujm"
+    tmp2_file: "/tmp/ansible_tmp2_tmtghujm"
+    tmp3_file: "/tmp/ansible_tmp3_tmtghujm"
+    tmp4_file: "/tmp/ansible_tmp4_tmtghujm"
+    tmp5_file: "/tmp/ansible_tmp5_tmtghujm"
+    tmp6_file: "/tmp/ansible_tmp6_tmtghujm"
+    no_restart:
+      - node01.nfs.info
+  order: sorted
+
+  tasks:
+    - name: Clear the files
+      file:
+        state: absent
+        path: "{{item}}"
+      delegate_to: localhost
+      become: false
+      run_once: true
+      loop:
+        - "{{mail_body_file}}"
+        - "{{start_file}}"
+        - "{{connected_file}}"
+        - "{{updated_file}}"
+        - "{{needsrestart_file}}"
+        - "{{restared_file}}"
+        - "{{tmp1_file}}"
+        - "{{tmp2_file}}"
+        - "{{tmp3_file}}"
+        - "{{tmp4_file}}"
+        - "{{tmp5_file}}"
+        - "{{tmp6_file}}"
+
+    - name: Touch the files
+      file:
+        state: touch
+        path: "{{item}}"
+      delegate_to: localhost
+      become: false
+      run_once: true
+      loop:
+        - "{{mail_body_file}}"
+        - "{{start_file}}"
+        - "{{connected_file}}"
+        - "{{updated_file}}"
+        - "{{needsrestart_file}}"
+        - "{{restared_file}}"
+        - "{{tmp1_file}}"
+        - "{{tmp2_file}}"
+        - "{{tmp3_file}}"
+        - "{{tmp4_file}}"
+        - "{{tmp5_file}}"
+        - "{{tmp6_file}}"
+
+    - name: Get timestamp from the system
+      shell: "date"
+      delegate_to: localhost
+      run_once: true
+      register: start_date
+      become: false
+
+    - name: Create the start file
+      shell: "echo {{ inventory_hostname }} >> {{ start_file }}"
+      delegate_to: localhost
+      become: false
+      register: bob
+
+    - name: debug
+      debug:
+        var: bob
+
+    - name: Update all installed packages using YUM module
+      yum:
+        name: '*'
+        state: latest
+        update_cache: yes
+        update_only: yes
+      register: yum_updates
+
+    - name: debug
+      debug:
+        var: yum_updates
+
+    - name: Create the connected file
+      shell: "echo {{ inventory_hostname }} >> {{ connected_file }}"
+      delegate_to: localhost
+      become: false
+
+    - name: Create the updated file
+      shell: "echo {{ inventory_hostname }} >> {{ updated_file }}"
+      delegate_to: localhost
+      when: yum_updates.changed
+      become: false
+
+    - name: Create the tmp1_file file for connected
+      shell: |
+        (for list in $(cat {{ start_file }} )
+          do
+              if [[ $(grep "${list}" {{ connected_file }} ) ]]
+              then
+                  echo "<td>${list}</td>"'<td>Success</td>' >> {{ tmp1_file }}
+              else
+                  echo "<td>${list}</td>"'<td>Failed</td>' >> {{ tmp1_file }}
+              fi
+          done
+          )
+      delegate_to: localhost
+      become: false
+      run_once: True
+
+    - name: Create the tmp2_file file for updated
+      shell: |
+        (for list in $(cat {{ start_file }} )
+        do
+            if [[ $(grep "${list}" {{ updated_file }} ) ]]
+            then
+                echo "$(grep ${list} {{ tmp1_file }} )"'<td>Updated</td>' >> {{ tmp2_file }}
+            elif [[ ! $(grep "${list}" {{ connected_file }} ) ]]
+            then
+                echo "$(grep ${list} {{ tmp1_file }} )"'<td>Failed</td>' >> {{ tmp2_file }}
+            else
+                echo "$(grep ${list} {{ tmp1_file }} )"'<td>OK</td>' >> {{ tmp2_file }}
+            fi
+        done
+        )
+      delegate_to: localhost
+      become: false
+      run_once: True
+
+    - name: check to see if we need a reboot
+      command: needs-restarting -r
+      register: needsrestart
+      ignore_errors: yes
+
+    - name: Create the needsrestart file
+      shell: "echo {{ inventory_hostname }} >> {{ needsrestart_file }}"
+      delegate_to: localhost
+      when: needsrestart.rc == 1
+      become: false
+
+    - name: Create the tmp2_file file for NeedsReStart
+      shell: |
+        (for list in $(cat {{ start_file }} )
+        do
+            if [[ $(grep "${list}" {{ needsrestart_file }} ) ]]
+            then
+                echo "$(grep ${list} {{ tmp2_file }} )"'<td>Needs Restart</td>' >> {{ tmp3_file }}
+            elif [[ ! $(grep "${list}" {{ connected_file }} ) ]]
+            then
+                echo "$(grep ${list} {{ tmp2_file }} )"'<td>Failed</td>' >> {{ tmp3_file }}
+            else
+                echo "$(grep ${list} {{ tmp2_file }} )"'<td>OK</td>' >> {{ tmp3_file }}
+            fi
+        done
+        )
+      delegate_to: localhost
+      become: false
+      run_once: True
+
+    - name: Reboot Server if Necessary
+      shell: sleep 5 && reboot
+      async: 1
+      poll: 0
+      timeout: 10
+      when: needsrestart.rc == 1 and inventory_hostname not in no_restart
+      ignore_errors: yes
+      register: rebooted
+
+    - name: debug
+      debug:
+        var: rebooted
+
+    - name: debug
+      debug:
+        var: needsrestart
+
+    - name: Pausing to allow server to shutdown and terminate our SSH connection
+      pause: seconds=200
+      when: needsrestart.rc == 1
+
+    - name: Verify reboot
+      command: uptime
+      register: uptime
+
+    - name: check to see if we need a reboot the second time
+      command: needs-restarting -r
+      register: needsrestart2
+      ignore_errors: yes
+
+    - name: Create the Restarted file
+      shell: "echo {{ inventory_hostname }} >> {{ restared_file }}"
+      delegate_to: localhost
+      when: needsrestart2.rc == 0 and needsrestart.rc == 1
+      become: false
+
+    - name: Create the tmp4_file file for Restarted
+      shell: |
+        (echo '<table>' >> {{ tmp4_file }}
+        for list in $(cat {{ start_file }} | sort )
+        do
+            echo '<tr>' >> {{ tmp4_file }}
+            if [[ $(grep "${list}" {{ restared_file }} ) ]]
+            then
+                echo "$(grep ${list} {{ tmp3_file }} )"'<td>Restarted</td>' >> {{ tmp4_file }}
+            elif [[ ! $(grep "${list}" {{ connected_file }} ) ]]
+            then
+                echo "$(grep ${list} {{ tmp3_file }} )"'<td>Failed</td>' >> {{ tmp4_file }}
+            else
+                if [[ ! $(grep "${list}" {{ needsrestart_file }} ) ]]
+                then
+                  echo "$(grep ${list} {{ tmp3_file }} )"'<td>OK</td>' >> {{ tmp4_file }}
+                else
+                  echo "$(grep ${list} {{ tmp3_file }} )"'<td>Needs Restart</td>' >> {{ tmp4_file }}
+                fi
+            fi
+            echo '</tr>' >> {{ tmp4_file }}
+        done
+        echo '</table>' >> {{ tmp4_file }}
+        )
+      delegate_to: localhost
+      become: false
+      run_once: True
+
+    - name: Get timestamp from the system
+      shell: "date"
+      delegate_to: localhost
+      run_once: true
+      register: end_date
+      become: false
+
+    - name: Use j2 template to create body part
+      template:
+        src: templates/body.j2
+        dest: /tmp/{{inventory_hostname}}.body.html
+      delegate_to: localhost
+      become: false
+
+    - name: Create the summery file
+      shell: cat {{tmp4_file}} >> {{mail_body_file}}
+      delegate_to: localhost
+      become: false
+      run_once: True
+
+    - name: Start time
+      shell: |
+        echo "<p>Start: {{ start_date.stdout }}</p>" >> {{ mail_body_file }}
+      delegate_to: localhost
+      become: false
+      run_once: True
+
+    - name: End time
+      shell: |
+        echo "<p>End: {{ end_date.stdout }}</p>" >> {{ mail_body_file }}
+      delegate_to: localhost
+      become: false
+      run_once: True
+
+    - name: add the individual runs
+      shell: "cat /tmp/{{inventory_hostname}}.body.html  >> {{mail_body_file}}"
+      delegate_to: localhost
+      become: false
+
+    - name: get the mail body to variable
+      register: mail_body
+      command: "cat {{mail_body_file}}"
+      delegate_to: localhost
+      run_once: True
+
+    - name: Sending an e-mail using gmail with app key
+      community.general.mail:
+        host: "{{ gmail.host }}"
+        port: "{{ gmail.port }}"
+        username: "{{ gmail.username  | default(omit) }}"
+        password: "{{ gmail.password  | default(omit) }}"
+        subtype: html
+        to: "{{ updateAll.to }}"
+        from: "{{ updateAll.from }}"
+        subject: Ansible-report for {{start_date.stdout}}
+        body: "{{mail_body.stdout}}"
+        #secure: "{{ gmail.secure }}"
+      delegate_to: localhost
+      run_once: True
+      register: emailresult
+      until: emailresult is not failed
+      retries: 3
+      delay: 20
+
+    - name: Clear the files
+      file:
+        state: absent
+        path: "{{item}}"
+      delegate_to: localhost
+      become: false
+      run_once: true
+      loop:
+        - "{{mail_body_file}}"
+        - "{{start_file}}"
+        - "{{connected_file}}"
+        - "{{updated_file}}"
+        - "{{needsrestart_file}}"
+        - "{{restared_file}}"
+        - "{{tmp1_file}}"
+        - "{{tmp2_file}}"
+        - "{{tmp3_file}}"
+        - "{{tmp4_file}}"
+        - "{{tmp5_file}}"
+        - "{{tmp6_file}}"
+
+    - name: delete all
+      file:
+        state: absent
+        path: /tmp/{{inventory_hostname}}.body.html
+      delegate_to: localhost
+      become: false
+

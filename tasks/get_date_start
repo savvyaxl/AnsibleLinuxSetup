@@ -1,0 +1,6 @@
+- name: Get timestamp from the system
+  shell: "date"
+  register: start_date
+  delegate_to: localhost
+  run_once: true
+  become: false
