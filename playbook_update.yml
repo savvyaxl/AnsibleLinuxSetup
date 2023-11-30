@@ -28,9 +28,9 @@
         loop_var: outer_item
       loop:
       - tasks/get_date_start
-      - tasks/create_file_start
       - tasks/create_files_clear
       - tasks/create_files_touch
+      - tasks/create_file_start
 
   tasks:
     - name: run included tasks
