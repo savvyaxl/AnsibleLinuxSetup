@@ -1,5 +1,5 @@
 ---
-- hosts: msi
+- hosts: removeusers
   gather_facts: no
   #vars_files:
   #- vault/passwords
