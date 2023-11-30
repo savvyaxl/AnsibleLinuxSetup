@@ -28,11 +28,25 @@
         loop_var: outer_item
       loop:
       - tasks/get_date_start
+      - tasks/create_file_start
+      - tasks/create_files_clear
+      - tasks/create_files_touch
 
   tasks:
     - name: run included tasks
-      include: tasks/get_date_start
+      include_tasks: "{{outer_item}}"
+      loop_control:
+        loop_var: outer_item
+      loop:
+      - tasks/update_reboot
+      - tasks/create_summery
 
   post_tasks:
-    - name: run included post tasks
-      include: tasks/get_date_start
+    - name: run included tasks
+      include_tasks: "{{outer_item}}"
+      loop_control:
+        loop_var: outer_item
+      loop:
+      - tasks/get_date_end
+      - tasks/email
+      - tasks/create_files_clear

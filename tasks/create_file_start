@@ -1,0 +1,4 @@
+- name: Create the start file
+  shell: "echo {{ inventory_hostname }} >> {{ start_file }}"
+  delegate_to: localhost
+  become: false
